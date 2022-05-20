@@ -1,0 +1,47 @@
+<div style="margin-left: 15px; margin-right: 15px;">
+  <div class="list-group-item flex-row collapsible" *ngFor="let alarm of alarms">
+    
+    <div class="list-item-actions">  
+      <!-- toggle collapse -->
+      <button type="button" title="Create ticket" class="btn btn-primary btn-xs" style="top: 10px; right: 16px;">
+        <i c8y-icon="ticket" class="status dlt-c8y-icon-ticket"></i>
+      </button>
+    </div>
+
+    <!-- status -->
+    <div class="list-item-icon">
+      <!-- icon severity-->
+      <i c8y-icon="warning" class="status dlt-c8y-icon-warning critical" title="CRITICAL" *ngIf="alarm.severity === 'CRITICAL'"></i>
+      <i c8y-icon="circle" class="status dlt-c8y-icon-circle warning" title="WARNING" *ngIf="alarm.severity === 'WARNING'"></i>
+      <i c8y-icon="exclamation-circle" class="status dlt-c8y-icon-exclamation-circle minor" title="MINOR" *ngIf="alarm.severity === 'MINOR'"></i>
+      <i c8y-icon="exclamation-circle" class="status dlt-c8y-icon-exclamation-circle major" title="MAJOR" *ngIf="alarm.severity === 'MAJOR'"></i>
+      <br>
+      <!-- icon alarm -->
+      <i c8y-icon="bell" class="dlt-c8y-icon-bell" title="ACTIVE" *ngIf="alarm.status === 'ACTIVE'"></i>
+    </div>
+
+    <div class="list-item-body">
+      <!-- Alarm description -->
+      <span>{{alarm.text}}</span>
+      <p class="m-t-4">
+        <!-- Date -->
+        <small class="text-muted icon-flex" title="Last occurrence of this alarm (device time).">
+          <i c8y-icon="clock-o" class="dlt-c8y-icon-clock-o"></i>{{alarm.time | date : 'dd MMM yyyy, HH:mm:ss'}}
+        </small>
+        &nbsp;
+        <!-- device -->
+        <br class="visible-xs">
+        <a class="text-muted" title="Go to device" href="">
+          <small class="icon-flex">
+            <i c8y-icon="exchange" class="dlt-c8y-icon-exchange"></i>{{alarm.source.name}}
+          </small>
+        </a>
+        <span class="pull-right showOnHover"></span>
+      </p>
+      <dl class="dl-inline small text-muted m-t-4">
+        <dt>Type</dt>
+        <dd>{{alarm.type}}</dd>
+      </dl>
+    </div>
+  </div>
+</div>
