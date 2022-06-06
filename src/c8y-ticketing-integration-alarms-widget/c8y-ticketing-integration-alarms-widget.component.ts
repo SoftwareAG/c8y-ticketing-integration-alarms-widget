@@ -20,8 +20,8 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { AlarmStatus, IAlarm, IResultList, Severity } from '@c8y/client';
-import { AlertService, Status } from '@c8y/ngx-components';
+import { AlarmStatus, IFetchOptions, IFetchResponse } from '@c8y/client';
+import { AlertService } from '@c8y/ngx-components';
 import { AlarmService, FetchClient, Realtime } from '@c8y/ngx-components/api';
 import * as _ from 'lodash';
 
@@ -35,16 +35,18 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
 
     @Input() config;
 
+    private deviceId: string = "";
+
     public alarms = [];
 
-    constructor(private realtime: Realtime, private alarm: AlarmService) {
+    constructor(private realtime: Realtime, private alarm: AlarmService, private fetchClient: FetchClient, private alertService: AlertService) {
     }
 
     async ngOnInit(): Promise<void> {
         try {
-           let deviceId = this.config.device.id;
-           this.alarms = (await this.getAlarms(deviceId)).data;
-           this.realtime.subscribe('/alarms/'+deviceId, (resp) => {
+           this.deviceId = this.config.device.id;
+           await this.getAlarms();
+           this.realtime.subscribe('/alarms/'+this.deviceId, (resp) => {
             if(resp.data.realtimeAction === "CREATE" && resp.data.data.status === AlarmStatus.ACTIVE) {
                 this.alarms.push(resp.data.data);
             } 
@@ -54,13 +56,36 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
         }
     }
 
-    private getAlarms(deviceId: string): Promise<IResultList<IAlarm>> {
+    private async getAlarms(): Promise<void> {
         let filter: object = {
-            source: deviceId,
+            source: this.deviceId,
             status: AlarmStatus.ACTIVE,
             pageSize: 50
         };
-        return this.alarm.list(filter);
+        this.alarms = (await this.alarm.list(filter)).data;
+    }
+
+    public createTicket(alarmId: string) {
+        const fetchOptions: IFetchOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({'alarmId': alarmId})
+        };
+        let fetchResp: Promise<IFetchResponse> = this.fetchClient.fetch("/service/ticketing/tickets", fetchOptions);
+        fetchResp.then((resp: IFetchResponse) => {
+            if(resp.status === 201) {
+                resp.json().then((jsonResp) => {
+                    this.alertService.success("Ticket created successfully!");
+                    this.getAlarms();
+                }).catch((err) => {
+                    console.log("Ticketing Integration Alarms Widget - Error processing create ticket json response: "+err);
+                });
+            } else {
+                console.log("Ticketing Integration Alarms Widget - Unable to create ticket: "+resp.status);
+            }
+        }).catch((err) => {
+            console.log("Ticketing Integration Alarms Widget - Unable to create ticket: "+err);
+        });
     }
 
 }
