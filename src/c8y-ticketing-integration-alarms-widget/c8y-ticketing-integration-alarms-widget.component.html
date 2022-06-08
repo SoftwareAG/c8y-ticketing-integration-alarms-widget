@@ -1,3 +1,9 @@
+<div class="text-muted" *ngIf="alarms.length === 0">
+  <div class="c8y-empty-state text-left">
+    <h1 class="c8y-icon c8y-icon-alert-idle c8y-icon-duocolor"></h1>
+    <p><strong translate="">No alarms to display.</strong></p>
+  </div>
+</div>
 <div style="margin-left: 15px; margin-right: 15px;">
   <div class="list-group-item flex-row collapsible" *ngFor="let alarm of alarms">
     
@@ -31,7 +37,7 @@
         &nbsp;
         <!-- device -->
         <br class="visible-xs">
-        <a class="text-muted" title="Go to device" href="">
+        <a class="text-muted" title="Go to device" href="/apps/devicemanagement/index.html#/device/{{config.device.id}}/device-info">
           <small class="icon-flex">
             <i c8y-icon="exchange" class="dlt-c8y-icon-exchange"></i>{{alarm.source.name}}
           </small>

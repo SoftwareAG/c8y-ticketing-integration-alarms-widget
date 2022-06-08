@@ -36,7 +36,7 @@ import { HttpClientModule } from "@angular/common/http";
             useValue: {
                 id: "global.presales.c8y.ticketing.integration.alarms.widget",
                 label: "Ticketing Integration Alarms",
-                description: "To configure",
+                description: "Depends on Ticketing Integration microservice. Shows active alarms related to a device and and allows to create tickets.",
                 component: CumulocityTicketingIntegrationAlarmsWidget,
                 configComponent: CumulocityTicketingIntegrationAlarmsWidgetConfig,
                 previewImage: require("@widget-assets/img-preview.png"),

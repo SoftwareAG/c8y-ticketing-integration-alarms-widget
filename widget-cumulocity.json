@@ -3,7 +3,7 @@
     "contextPath": "c8y-ticketing-integration-alarms-widget",
     "key": "c8y-ticketing-integration-alarms-widget-key",
     "contentSecurityPolicy": "default-src 'self'",
-    "description": "Configure to.",
+    "description": "Depends on Ticketing Integration microservice. Shows active alarms related to a device and and allows to create tickets.",
     "icon": {
         "class": "fa fw fa-database"
     },

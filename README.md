@@ -16,8 +16,10 @@ This widget allows...
 2. Click on `Add widget`.
 3. Choose `Ticket Integration Alarms` widget.
 4. `Title` is the title of widget. Provide a relevant name. You may choose to hide this. Go to `Appearance` tab and choose `Hidden` under `Widget header style`.
-5. Click `Save` to add the widget on the dashboard.
-6. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
+5. Choose device using `Target assets or devices` for which you want to see the active alarms.
+6. Click `Save` to add the widget on the dashboard.
+7. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
+8. To create a ticket, click `Create Ticket` button respective to an alarm.
 
 ### Development - to do the enhancements and testing locally
 1. Clone the repository on local machine using `git clone https://github.com/SoftwareAG/c8y-ticketing-integration-alarms-widget.git`.
