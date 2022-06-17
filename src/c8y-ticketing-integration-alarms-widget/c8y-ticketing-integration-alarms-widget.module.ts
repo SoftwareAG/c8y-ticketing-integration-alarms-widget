@@ -20,15 +20,27 @@
  */
 
 import { CoreModule, HOOK_COMPONENTS } from "@c8y/ngx-components";
+import { ModalModule } from "ngx-bootstrap/modal";
 import { CumulocityTicketingIntegrationAlarmsWidgetConfig } from "./c8y-ticketing-integration-alarms-widget.config.component";
 import { CumulocityTicketingIntegrationAlarmsWidget } from "./c8y-ticketing-integration-alarms-widget.component";
 import { NgModule } from "@angular/core";
-import { HttpClientModule } from "@angular/common/http";
+import { TicketCommentModal } from "./modal/ticket-comment-modal.component";
 
 @NgModule({
-    imports: [CoreModule, HttpClientModule],
-    declarations: [CumulocityTicketingIntegrationAlarmsWidget, CumulocityTicketingIntegrationAlarmsWidgetConfig],
-    entryComponents: [CumulocityTicketingIntegrationAlarmsWidget, CumulocityTicketingIntegrationAlarmsWidgetConfig],
+    imports: [
+        CoreModule,
+        ModalModule
+    ],
+    declarations: [
+        CumulocityTicketingIntegrationAlarmsWidget, 
+        CumulocityTicketingIntegrationAlarmsWidgetConfig,
+        TicketCommentModal
+    ],
+    entryComponents: [
+        CumulocityTicketingIntegrationAlarmsWidget, 
+        CumulocityTicketingIntegrationAlarmsWidgetConfig,
+        TicketCommentModal
+    ],
     providers: [
         {
             provide: HOOK_COMPONENTS,

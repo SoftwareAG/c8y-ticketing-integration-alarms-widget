@@ -1,6 +1,6 @@
 # Ticketing Integration Alarms Widget for Cumulocity IoT
 
-This widget allows...
+This widget is dependent on Cumulocity IoT Ticketing Integration microservice. It shows active alarms related to a device and allows to crete
 
 ![Preview](src/c8y-ticketing-integration-alarms-widget/assets/img-preview.png)
 

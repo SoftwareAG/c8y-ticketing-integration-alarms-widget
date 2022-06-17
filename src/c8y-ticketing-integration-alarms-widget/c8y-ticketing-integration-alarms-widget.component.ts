@@ -20,10 +20,12 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { AlarmStatus, IFetchOptions, IFetchResponse } from '@c8y/client';
+import { AlarmStatus } from '@c8y/client';
 import { AlertService } from '@c8y/ngx-components';
 import { AlarmService, FetchClient, Realtime } from '@c8y/ngx-components/api';
 import * as _ from 'lodash';
+import { BsModalService, BsModalRef  } from 'ngx-bootstrap/modal';
+import { TicketCommentModal  } from './modal/ticket-comment-modal.component';
 
 
 @Component({
@@ -39,7 +41,9 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
 
     public alarms = [];
 
-    constructor(private realtime: Realtime, private alarm: AlarmService, private fetchClient: FetchClient, private alertService: AlertService) {
+    private ticketModalRef: BsModalRef;
+
+    constructor(private realtime: Realtime, private alarm: AlarmService, private fetchClient: FetchClient, private alertService: AlertService, private modalService: BsModalService) {
     }
 
     async ngOnInit(): Promise<void> {
@@ -52,7 +56,7 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
             } 
            });
         } catch(e) {
-            console.log("Ticketing Integration Alarms Widget - ngOnInit() "+e);
+            this.alertService.danger("Ticketing Integration Alarms Widget - ngOnInit()", e);
         }
     }
 
@@ -66,26 +70,17 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
     }
 
     public createTicket(alarmId: string) {
-        const fetchOptions: IFetchOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({'alarmId': alarmId})
+        let message = {
+            'alarmId': alarmId
         };
-        let fetchResp: Promise<IFetchResponse> = this.fetchClient.fetch("/service/ticketing/tickets", fetchOptions);
-        fetchResp.then((resp: IFetchResponse) => {
-            if(resp.status === 201) {
-                resp.json().then((jsonResp) => {
-                    this.alertService.success("Ticket created successfully!");
-                    this.getAlarms();
-                }).catch((err) => {
-                    console.log("Ticketing Integration Alarms Widget - Error processing create ticket json response: "+err);
-                });
-            } else {
-                console.log("Ticketing Integration Alarms Widget - Unable to create ticket: "+resp.status);
-            }
-        }).catch((err) => {
-            console.log("Ticketing Integration Alarms Widget - Unable to create ticket: "+err);
+        this.ticketModalRef = this.modalService.show(TicketCommentModal, { class: 'c8y-wizard', initialState: {message} });
+        
+        // On modal hidden
+        this.ticketModalRef.onHidden.subscribe(() => {
+            this.getAlarms();
         });
     }
+
+    
 
 }
