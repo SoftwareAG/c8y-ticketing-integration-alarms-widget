@@ -20,12 +20,37 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { AlarmStatus } from '@c8y/client';
+import { AlarmStatus, IFetchResponse, IAlarm, IResult } from '@c8y/client';
 import { AlertService } from '@c8y/ngx-components';
 import { AlarmService, FetchClient, Realtime } from '@c8y/ngx-components/api';
 import * as _ from 'lodash';
 import { BsModalService, BsModalRef  } from 'ngx-bootstrap/modal';
 import { TicketCommentModal  } from './modal/ticket-comment-modal.component';
+
+
+export interface Ticket {
+    id: string;
+    subject: string;
+    description: string;
+    status: string;
+    priority: string;
+    owner: string;
+    creationDate: string;
+    lastUpdateDate: string;
+    alarmId: string;
+    deviceId: string;
+}
+
+export interface TPConfig {
+    name: string;
+    username: string;
+    password: string;
+    tenantUrl: string;
+    accountId: string;
+    ticketRecordTemplateUrl: string;
+    alarmSubscription: boolean;
+    autoAcknowledgeAlarm: boolean;
+}
 
 
 @Component({
@@ -39,20 +64,34 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
 
     private deviceId: string = "";
 
-    public alarms = [];
+    public isCollapsed = false;
+
+    public collapsedArray: boolean[] = [];
+    public alarms: IAlarm[] = [];
+    public ticketsMap = new Map<string, Ticket>();
+    public tpConfig: TPConfig;
 
     private ticketModalRef: BsModalRef;
 
-    constructor(private realtime: Realtime, private alarm: AlarmService, private fetchClient: FetchClient, private alertService: AlertService, private modalService: BsModalService) {
+    constructor(private realtime: Realtime, private alarmService: AlarmService, private fetchClient: FetchClient, private alertService: AlertService, private modalService: BsModalService) {
     }
 
     async ngOnInit(): Promise<void> {
         try {
            this.deviceId = this.config.device.id;
-           await this.getAlarms();
+
+           await this.getAlarms(); // get all active alarms for a device
+           await this.getTickets(); // get all tickets for a device
+           await this.getTPConfig(); // get ticketing platform config
+
+           this.alarms.forEach((alarm, index) => {
+            this.collapsedArray[index] = true;
+           })
+
+           // subscribe realtime alarms notifications
            this.realtime.subscribe('/alarms/'+this.deviceId, (resp) => {
             if(resp.data.realtimeAction === "CREATE" && resp.data.data.status === AlarmStatus.ACTIVE) {
-                this.alarms.push(resp.data.data);
+                this.alarms.unshift(resp.data.data);
             } 
            });
         } catch(e) {
@@ -66,7 +105,42 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
             status: AlarmStatus.ACTIVE,
             pageSize: 50
         };
-        this.alarms = (await this.alarm.list(filter)).data;
+        this.alarms = (await this.alarmService.list(filter)).data;
+    }
+
+    private async getTickets(): Promise<void> {
+        let fetchResp: Promise<IFetchResponse> = this.fetchClient.fetch("/service/ticketing/tickets?deviceId="+this.deviceId);
+        fetchResp.then((resp) => {
+            if(resp.status === 200) {
+                resp.json().then((jsonResp) => {
+                    let tickets: Ticket[] = jsonResp.records;
+                    tickets.forEach((ticket) => {
+                        this.ticketsMap.set(ticket.alarmId, ticket);
+                    });
+                });
+            } else {
+                this.alertService.danger("Unable to fetch tickets for device.", resp.status.toString());
+            }
+        }).catch((e) => {
+            this.alertService.danger("Unable to fetch tickets for device.", e);
+        });
+    }
+
+    private async getTPConfig(): Promise<void> {
+        let fetchResp: Promise<IFetchResponse> = this.fetchClient.fetch("/service/ticketing/tpconfig");
+        fetchResp.then((resp) => {
+            if(resp.status === 200) {
+                resp.json().then((jsonResp) => {
+                    this.tpConfig = jsonResp.record;
+                }).catch((err) => {
+                    this.alertService.danger("Unable to get Ticketing Platform Configuration.", err);        
+                });
+            } else {
+                this.alertService.danger("Unable to get Ticketing Platform Configuration.", resp.status.toString());    
+            }
+        }).catch((err) => {
+            this.alertService.danger("Unable to get Ticketing Platform Configuration.", err);
+        });
     }
 
     public createTicket(alarmId: string) {
@@ -78,6 +152,34 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
         // On modal hidden
         this.ticketModalRef.onHidden.subscribe(() => {
             this.getAlarms();
+        });
+    }
+
+    public acknowledgeAlarm(alarm: IAlarm): void {
+        let updatedAlarm: Partial<IAlarm> = {
+            id: alarm.id,
+            status: AlarmStatus.ACKNOWLEDGED
+        };
+        let updatedAlarmResult: Promise<IResult<IAlarm>> = this.alarmService.update(updatedAlarm);
+        updatedAlarmResult.then((result) => {
+           this.alertService.success("Alarm acknowledged."); 
+           this.getAlarms();
+        }).catch((err) => {
+            this.alertService.danger("Failed to acknowledge alarm.", err);
+        });
+    }
+
+    public clearAlarm(alarm: IAlarm): void {
+        let updatedAlarm: Partial<IAlarm> = {
+            id: alarm.id,
+            status: AlarmStatus.CLEARED
+        };
+        let updatedAlarmResult: Promise<IResult<IAlarm>> = this.alarmService.update(updatedAlarm);
+        updatedAlarmResult.then((result) => {
+           this.alertService.success("Alarm cleared."); 
+           this.getAlarms();
+        }).catch((err) => {
+            this.alertService.danger("Failed to clear alarm.", err);
         });
     }
 

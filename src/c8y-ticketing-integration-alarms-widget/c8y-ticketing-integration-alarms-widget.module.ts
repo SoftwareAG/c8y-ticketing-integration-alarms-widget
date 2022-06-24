@@ -25,16 +25,20 @@ import { CumulocityTicketingIntegrationAlarmsWidgetConfig } from "./c8y-ticketin
 import { CumulocityTicketingIntegrationAlarmsWidget } from "./c8y-ticketing-integration-alarms-widget.component";
 import { NgModule } from "@angular/core";
 import { TicketCommentModal } from "./modal/ticket-comment-modal.component";
+import { CollapseModule } from "ngx-bootstrap/collapse";
+import { TicketIdReplacementPipe } from "./pipe/TicketIdReplacementPipe";
 
 @NgModule({
     imports: [
         CoreModule,
-        ModalModule
+        ModalModule,
+        CollapseModule
     ],
     declarations: [
         CumulocityTicketingIntegrationAlarmsWidget, 
         CumulocityTicketingIntegrationAlarmsWidgetConfig,
-        TicketCommentModal
+        TicketCommentModal,
+        TicketIdReplacementPipe
     ],
     entryComponents: [
         CumulocityTicketingIntegrationAlarmsWidget, 

@@ -9,9 +9,11 @@ import { AssetsNavigatorModule } from "@c8y/ngx-components/assets-navigator";
 import { CockpitDashboardModule } from "@c8y/ngx-components/context-dashboard";
 import { ReportsModule } from "@c8y/ngx-components/reports";
 import { SensorPhoneModule } from "@c8y/ngx-components/sensor-phone";
+import { CollapseModule } from "ngx-bootstrap/collapse";
 import { CumulocityTicketingIntegrationAlarmsWidget } from './src/c8y-ticketing-integration-alarms-widget/c8y-ticketing-integration-alarms-widget.component';
 import { CumulocityTicketingIntegrationAlarmsWidgetConfig } from './src/c8y-ticketing-integration-alarms-widget/c8y-ticketing-integration-alarms-widget.config.component';
 import { TicketCommentModal } from "./src/c8y-ticketing-integration-alarms-widget/modal/ticket-comment-modal.component";
+import { TicketIdReplacementPipe } from "./src/c8y-ticketing-integration-alarms-widget/pipe/TicketIdReplacementPipe";
 
 @NgModule({
   imports: [
@@ -26,12 +28,14 @@ import { TicketCommentModal } from "./src/c8y-ticketing-integration-alarms-widge
     CockpitDashboardModule,
     SensorPhoneModule,
     UpgradeModule,
-    ModalModule
+    ModalModule,
+    CollapseModule
   ],
   declarations: [
     CumulocityTicketingIntegrationAlarmsWidget, 
     CumulocityTicketingIntegrationAlarmsWidgetConfig,
-    TicketCommentModal
+    TicketCommentModal,
+    TicketIdReplacementPipe
   ],
   entryComponents: [
     CumulocityTicketingIntegrationAlarmsWidget, 
