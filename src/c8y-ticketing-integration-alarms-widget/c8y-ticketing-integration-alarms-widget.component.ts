@@ -152,6 +152,7 @@ export class CumulocityTicketingIntegrationAlarmsWidget implements OnInit {
         // On modal hidden
         this.ticketModalRef.onHidden.subscribe(() => {
             this.getAlarms();
+            this.getTickets();
         });
     }
 

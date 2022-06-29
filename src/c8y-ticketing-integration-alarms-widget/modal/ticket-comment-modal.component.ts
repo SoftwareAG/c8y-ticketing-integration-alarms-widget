@@ -31,8 +31,8 @@ export class TicketCommentModal {
         fetchResp.then((resp: IFetchResponse) => {
             if(resp.status === 201) {
                 resp.json().then((jsonResp) => {
-                    this.dismiss();
                     this.alertService.success("Ticket created successfully!");
+                    this.dismiss();
                 }).catch((err) => {
                     this.alertService.danger("Ticketing Integration Alarms Widget - Error processing create ticket json response", err);
                 });
