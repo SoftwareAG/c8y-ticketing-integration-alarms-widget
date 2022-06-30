@@ -16,10 +16,19 @@ This widget is dependent on Cumulocity IoT Ticketing Integration microservice. I
 2. Click on `Add widget`.
 3. Choose `Ticket Integration Alarms` widget.
 4. `Title` is the title of widget. Provide a relevant name. You may choose to hide this. Go to `Appearance` tab and choose `Hidden` under `Widget header style`.
-5. Choose device using `Target assets or devices` for which you want to see the active alarms.
+5. Choose a device using `Target assets or devices` for which you want to see the active alarms. It shows maximum 50 alarms at the moment.
 6. Click `Save` to add the widget on the dashboard.
 7. In case you see unexpected results on the widget, refer to browser console to see if there are error logs.
-8. To create a ticket, click `Create Ticket` button respective to an alarm.
+
+### Usage - to use the widget
+1. Once widget is added to the dashboards, it lists all the active alarms related to a device.
+2. On hovering an alarm, there can be 3 buttons
+    1. Green button to CLEAR an alarm.
+    2. Orange button to ACKNOWLDGE an alarm.
+    3. Blue button to CREATE A TICKET for an alarm.
+        1. It is only available if there is no ticket already created for an alarm.
+        2. Clicking this button will show a pop-up which allows you to write an additional description about an alarm before you create a ticket.
+3. If there is already a ticket related to an alarm, ticket id is shown. Clicking the ticket id will redirect you to the ticket record in Ticketing platform in a new browser tab.
 
 ### Development - to do the enhancements and testing locally
 1. Clone the repository on local machine using `git clone https://github.com/SoftwareAG/c8y-ticketing-integration-alarms-widget.git`.
