@@ -1,3 +1,5 @@
+For Cumulocity IoT version >= 10.16 and Application Builder version >= 2.0.0, please refer to https://github.com/SoftwareAG/c8y-ticketing-integration-plugin
+
 # Ticketing Integration Alarms Widget for Cumulocity IoT
 
 This widget is dependent on Cumulocity IoT Ticketing Integration microservice. It shows active alarms related to a device and allows to create tickets in the Ticketing platform.
